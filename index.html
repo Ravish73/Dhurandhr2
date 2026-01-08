@@ -11,7 +11,7 @@
     box-sizing: border-box;
 }
 
-/* MATRIX BACKGROUND */
+/* MATRIX */
 canvas {
     position: fixed;
     inset: 0;
@@ -21,9 +21,8 @@ canvas {
 
 body {
     height: 100vh;
-    overflow: hidden;
     font-family: "Courier New", monospace;
-    color: #00ff99;
+    overflow: hidden;
 }
 
 /* ACCESS SCREEN */
@@ -31,51 +30,45 @@ body {
     position: fixed;
     inset: 0;
     background: black;
+    color: #00ff99;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 5;
     font-size: 28px;
     letter-spacing: 3px;
-    color: #00ff99;
+    z-index: 5;
 }
 
-/* MAIN CONTENT */
+/* MAIN */
 .container {
     position: relative;
     z-index: 2;
     text-align: center;
     top: 50%;
     transform: translateY(-50%);
+    padding: 20px;
 }
 
-/* GLITCH LOGO */
+/* GLITCH TITLE */
 .glitch {
     font-size: 56px;
     letter-spacing: 6px;
-    position: relative;
-    color: #00ffcc;
-    animation: glitch 1.5s infinite;
+    color: #00eaff;
+    text-shadow: 0 0 15px rgba(0,234,255,0.7);
+    margin-bottom: 25px;
 }
 
-@keyframes glitch {
-    0% { text-shadow: 2px 0 red, -2px 0 cyan; }
-    20% { text-shadow: -2px 0 red, 2px 0 cyan; }
-    40% { text-shadow: 2px 2px red, -2px -2px cyan; }
-    60% { text-shadow: -2px -2px red, 2px 2px cyan; }
-    80% { text-shadow: 2px 0 red, -2px 0 cyan; }
-    100% { text-shadow: none; }
-}
-
+/* DIALOGUE */
 .dialogue {
-    margin-top: 30px;
     font-size: 20px;
+    line-height: 1.8;
     min-height: 160px;
-    border-right: 2px solid #00ff99;
+    color: #ffffff; /* FIXED COLOR */
+    border-right: 2px solid #ffffff;
     padding-right: 6px;
 }
 
-/* MUSIC CONTROLS */
+/* CONTROLS */
 .controls {
     position: fixed;
     bottom: 20px;
@@ -84,16 +77,16 @@ body {
 }
 
 button {
-    background: transparent;
-    color: #00ff99;
-    border: 1px solid #00ff99;
+    background: rgba(0,0,0,0.6);
+    color: #ffffff;
+    border: 1px solid #ffffff;
     padding: 10px 16px;
     cursor: pointer;
     font-family: "Courier New", monospace;
 }
 
 button:hover {
-    background: #00ff99;
+    background: #ffffff;
     color: black;
 }
 </style>
@@ -115,10 +108,10 @@ button:hover {
 </audio>
 
 <div class="controls">
-    <button onclick="toggleSound()">🔊 / 🔇</button>
+    <button onclick="toggleMusic()">🎵 Play / Pause</button>
 </div>
 
-<div class="container" style="display:none" id="main">
+<div class="container" id="main" style="display:none">
     <div class="glitch">DHURANDHR</div>
     <div class="dialogue" id="text"></div>
 </div>
@@ -128,35 +121,39 @@ button:hover {
 setTimeout(() => {
     document.getElementById("access").style.display = "none";
     document.getElementById("main").style.display = "block";
-    bgm.play().catch(()=>{});
     typeWriter();
-}, 3000);
+}, 2500);
 
 /* TYPEWRITER + SOUND */
-const text = `When the nation sleeps peacefully,
-someone guards it in silence.
+const dialogueText =
+`Hello Class.
 
-No face.
-No name.
-Only duty.
+When others finish making noise,
+real impact begins.
 
-Silent. Strategic. Unbreakable.
+Pressure doesn’t weaken coders.
+It sharpens them.
 
-I am not a hacker.
-I am the last line of defense.
+No shortcuts.
+No excuses.
+Only logic.
 
-I AM DHURANDHR.`;
+Silent.
+Focused.
+Relentless.
+
+This mindset is Dhurandhr.`;
 
 let i = 0;
 const speed = 45;
-const el = document.getElementById("text");
+const textEl = document.getElementById("text");
 const typeSound = document.getElementById("typeSound");
 
 function typeWriter() {
-    if (i < text.length) {
-        el.innerHTML += text.charAt(i);
+    if (i < dialogueText.length) {
+        textEl.innerHTML += dialogueText.charAt(i);
         typeSound.currentTime = 0;
-        typeSound.play();
+        typeSound.play().catch(()=>{});
         i++;
         setTimeout(typeWriter, speed);
     }
@@ -164,14 +161,16 @@ function typeWriter() {
 
 /* MUSIC CONTROL */
 const bgm = document.getElementById("bgm");
-let muted = false;
 
-function toggleSound() {
-    muted = !muted;
-    bgm.muted = muted;
+function toggleMusic() {
+    if (bgm.paused) {
+        bgm.play().catch(()=>{});
+    } else {
+        bgm.pause();
+    }
 }
 
-/* MATRIX RAIN */
+/* MATRIX EFFECT */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -184,14 +183,14 @@ const columns = canvas.width / fontSize;
 const drops = Array.from({ length: columns }).fill(1);
 
 function drawMatrix() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#00ff99";
     ctx.font = fontSize + "px monospace";
 
     drops.forEach((y, i) => {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, y * fontSize);
+        const char = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(char, i * fontSize, y * fontSize);
         drops[i] = y * fontSize > canvas.height && Math.random() > 0.975 ? 0 : y + 1;
     });
 }
