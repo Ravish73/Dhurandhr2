@@ -5,89 +5,110 @@
 <title>Dhurandhr | Cyber Sentinel</title>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    body {
-        height: 100vh;
-        background: radial-gradient(circle at center, #0b0b0b, #000000);
-        color: #00ff99;
-        font-family: "Courier New", monospace;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
+body {
+    height: 100vh;
+    background: radial-gradient(circle at center, #0b0b0b, #000000);
+    color: #00ff99;
+    font-family: "Courier New", monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-    /* Cinematic overlay */
-    body::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            rgba(0,0,0,0.6),
-            rgba(0,0,0,0.9)
-        );
-        z-index: 1;
-    }
+/* Dark cinematic overlay */
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9));
+    z-index: 1;
+}
 
-    .container {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        max-width: 800px;
-        padding: 20px;
-    }
+.container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    padding: 20px;
+}
 
-    h1 {
-        font-size: 52px;
-        letter-spacing: 6px;
-        color: #00ffcc;
-        text-shadow: 0 0 15px rgba(0,255,153,0.6);
-        margin-bottom: 30px;
-        animation: fadeIn 3s ease forwards;
-    }
+h1 {
+    font-size: 52px;
+    letter-spacing: 6px;
+    color: #00ffcc;
+    text-shadow: 0 0 18px rgba(0,255,153,0.6);
+    margin-bottom: 30px;
+    animation: fadeIn 3s ease forwards;
+}
 
-    .dialogue {
-        font-size: 20px;
-        line-height: 1.8;
-        min-height: 120px;
-        border-right: 2px solid #00ff99;
-        padding-right: 8px;
-        animation: blink 0.8s infinite;
-    }
+.dialogue {
+    font-size: 20px;
+    line-height: 1.8;
+    min-height: 140px;
+    border-right: 2px solid #00ff99;
+    padding-right: 8px;
+    animation: blink 0.8s infinite;
+}
 
-    @keyframes blink {
-        0%, 50% { border-color: #00ff99; }
-        51%, 100% { border-color: transparent; }
-    }
+@keyframes blink {
+    0%, 50% { border-color: #00ff99; }
+    51%, 100% { border-color: transparent; }
+}
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-    .tagline {
-        margin-top: 25px;
-        font-size: 16px;
-        color: #cccccc;
-        letter-spacing: 2px;
-        opacity: 0;
-        animation: fadeIn 2s ease forwards;
-        animation-delay: 8s;
-    }
+.tagline {
+    margin-top: 25px;
+    font-size: 16px;
+    color: #cccccc;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+    animation-delay: 9s;
+}
+
+/* 🎵 Play Music Button */
+#playBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    padding: 12px 22px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    background: transparent;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    cursor: pointer;
+    z-index: 10;
+    font-family: "Courier New", monospace;
+    transition: all 0.3s ease;
+}
+
+#playBtn:hover {
+    background: #00ff99;
+    color: #000;
+}
 </style>
 </head>
 
 <body>
 
 <!-- 🎵 Background Music -->
-<audio id="bgm" autoplay loop>
+<audio id="bgm" loop>
     <source src="dhurandhar.mp3" type="audio/mpeg">
 </audio>
+
+<button id="playBtn" onclick="playMusic()">▶ PLAY MUSIC</button>
 
 <div class="container">
     <h1>DHURANDHR</h1>
@@ -127,16 +148,25 @@ function typeWriter() {
     }
 }
 
-window.onload = () => {
-    typeWriter();
+// Music logic
+const audio = document.getElementById("bgm");
+const btn = document.getElementById("playBtn");
 
-    // ensure music plays (browser restrictions)
-    const audio = document.getElementById("bgm");
+window.addEventListener("load", () => {
     audio.volume = 0.6;
-    audio.play().catch(() => {
-        document.body.addEventListener("click", () => audio.play(), { once: true });
+    audio.play().then(() => {
+        btn.style.display = "none";
+    }).catch(() => {
+        btn.style.display = "block";
     });
-};
+});
+
+function playMusic() {
+    audio.play();
+    btn.style.display = "none";
+}
+
+typeWriter();
 </script>
 
 </body>
