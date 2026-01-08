@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dhurandhr | Cyber Sentinel</title>
+<title>DHURANDHR | Cyber Sentinel</title>
 
 <style>
 * {
@@ -11,162 +11,192 @@
     box-sizing: border-box;
 }
 
+/* MATRIX BACKGROUND */
+canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: black;
+}
+
 body {
     height: 100vh;
-    background: radial-gradient(circle at center, #0b0b0b, #000000);
-    color: #00ff99;
-    font-family: "Courier New", monospace;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
+    font-family: "Courier New", monospace;
+    color: #00ff99;
 }
 
-/* Dark cinematic overlay */
-body::after {
-    content: "";
-    position: absolute;
+/* ACCESS SCREEN */
+#access {
+    position: fixed;
     inset: 0;
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9));
-    z-index: 1;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: #00ff99;
 }
 
+/* MAIN CONTENT */
 .container {
     position: relative;
     z-index: 2;
     text-align: center;
-    max-width: 800px;
-    padding: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-h1 {
-    font-size: 52px;
+/* GLITCH LOGO */
+.glitch {
+    font-size: 56px;
     letter-spacing: 6px;
+    position: relative;
     color: #00ffcc;
-    text-shadow: 0 0 18px rgba(0,255,153,0.6);
-    margin-bottom: 30px;
-    animation: fadeIn 3s ease forwards;
+    animation: glitch 1.5s infinite;
+}
+
+@keyframes glitch {
+    0% { text-shadow: 2px 0 red, -2px 0 cyan; }
+    20% { text-shadow: -2px 0 red, 2px 0 cyan; }
+    40% { text-shadow: 2px 2px red, -2px -2px cyan; }
+    60% { text-shadow: -2px -2px red, 2px 2px cyan; }
+    80% { text-shadow: 2px 0 red, -2px 0 cyan; }
+    100% { text-shadow: none; }
 }
 
 .dialogue {
+    margin-top: 30px;
     font-size: 20px;
-    line-height: 1.8;
-    min-height: 140px;
+    min-height: 160px;
     border-right: 2px solid #00ff99;
-    padding-right: 8px;
-    animation: blink 0.8s infinite;
+    padding-right: 6px;
 }
 
-@keyframes blink {
-    0%, 50% { border-color: #00ff99; }
-    51%, 100% { border-color: transparent; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.tagline {
-    margin-top: 25px;
-    font-size: 16px;
-    color: #cccccc;
-    letter-spacing: 2px;
-    opacity: 0;
-    animation: fadeIn 2s ease forwards;
-    animation-delay: 9s;
-}
-
-/* 🎵 Play Music Button */
-#playBtn {
+/* MUSIC CONTROLS */
+.controls {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
-    padding: 12px 22px;
-    font-size: 14px;
-    letter-spacing: 2px;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+button {
     background: transparent;
     color: #00ff99;
     border: 1px solid #00ff99;
+    padding: 10px 16px;
     cursor: pointer;
-    z-index: 10;
     font-family: "Courier New", monospace;
-    transition: all 0.3s ease;
 }
 
-#playBtn:hover {
+button:hover {
     background: #00ff99;
-    color: #000;
+    color: black;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎵 Background Music -->
+<canvas id="matrix"></canvas>
+
+<div id="access">ACCESS GRANTED</div>
+
+<!-- AUDIO -->
 <audio id="bgm" loop>
     <source src="dhurandhar.mp3" type="audio/mpeg">
 </audio>
 
-<button id="playBtn" onclick="playMusic()">▶ PLAY MUSIC</button>
+<audio id="typeSound">
+    <source src="typing.mp3" type="audio/mpeg">
+</audio>
 
-<div class="container">
-    <h1>DHURANDHR</h1>
+<div class="controls">
+    <button onclick="toggleSound()">🔊 / 🔇</button>
+</div>
 
+<div class="container" style="display:none" id="main">
+    <div class="glitch">DHURANDHR</div>
     <div class="dialogue" id="text"></div>
-
-    <div class="tagline">
-        CYBER SENTINEL OF THE NATION 🇮🇳
-    </div>
 </div>
 
 <script>
-const dialogueText =
-`When the nation sleeps peacefully,
-someone stands awake in the shadows.
+/* ACCESS SCREEN */
+setTimeout(() => {
+    document.getElementById("access").style.display = "none";
+    document.getElementById("main").style.display = "block";
+    bgm.play().catch(()=>{});
+    typeWriter();
+}, 3000);
 
-No name.
+/* TYPEWRITER + SOUND */
+const text = `When the nation sleeps peacefully,
+someone guards it in silence.
+
 No face.
-Only purpose.
+No name.
+Only duty.
 
 Silent. Strategic. Unbreakable.
 
 I am not a hacker.
-I am a protector.
+I am the last line of defense.
 
-I am DHURANDHR.`;
+I AM DHURANDHR.`;
 
-let index = 0;
+let i = 0;
 const speed = 45;
-const textElement = document.getElementById("text");
+const el = document.getElementById("text");
+const typeSound = document.getElementById("typeSound");
 
 function typeWriter() {
-    if (index < dialogueText.length) {
-        textElement.innerHTML += dialogueText.charAt(index);
-        index++;
+    if (i < text.length) {
+        el.innerHTML += text.charAt(i);
+        typeSound.currentTime = 0;
+        typeSound.play();
+        i++;
         setTimeout(typeWriter, speed);
     }
 }
 
-// Music logic
-const audio = document.getElementById("bgm");
-const btn = document.getElementById("playBtn");
+/* MUSIC CONTROL */
+const bgm = document.getElementById("bgm");
+let muted = false;
 
-window.addEventListener("load", () => {
-    audio.volume = 0.6;
-    audio.play().then(() => {
-        btn.style.display = "none";
-    }).catch(() => {
-        btn.style.display = "block";
-    });
-});
-
-function playMusic() {
-    audio.play();
-    btn.style.display = "none";
+function toggleSound() {
+    muted = !muted;
+    bgm.muted = muted;
 }
 
-typeWriter();
+/* MATRIX RAIN */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "01";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = Array.from({ length: columns }).fill(1);
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#00ff99";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y, i) => {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, y * fontSize);
+        drops[i] = y * fontSize > canvas.height && Math.random() > 0.975 ? 0 : y + 1;
+    });
+}
+
+setInterval(drawMatrix, 33);
 </script>
 
 </body>
